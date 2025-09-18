@@ -495,9 +495,15 @@ def main():
                         )
                 
                         # Get matching results safely
-                        result = smart_customer_matching(planned_customers, visited_customers, threshold=80)
-                        st.write("DEBUG result:", result, "Length:", len(result))
-                        matched_pairs, unmatched_planned, unmatched_visited = result
+                        result = smart_customer_matching(
+                            planned_customers, visited_customers, threshold=80
+                        )
+                        
+                        if len(result) == 3:
+                            matched_pairs, unmatched_planned, unmatched_visited = result
+                        else:
+                            st.error("Matching function returned unexpected results")
+                            matched_pairs, unmatched_planned, unmatched_visited = {}, set(), set()
                 
                         expanded_visited_customers = visited_customers.union(
                             set(matched_pairs.keys())
@@ -554,8 +560,8 @@ def main():
                                 )
                 
                             comparison_df = pd.DataFrame(comparison_data)
-                            st.dataframe(comparison_df, use_container_width=True)
-            except Exception as e:
+            st.dataframe(comparison_df, use_container_width=True)            
+        except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
         st.markdown(
