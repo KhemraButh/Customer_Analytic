@@ -8,7 +8,7 @@ from datetime import datetime
 import streamlit as st
 import plotly.express as px
 import pytz
-from fuzzywuzzy import fuzz, process
+from rapidfuzz import fuzz, process
 import time
 import folium
 from streamlit_folium import st_folium
