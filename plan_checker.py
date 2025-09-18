@@ -478,11 +478,11 @@ def main():
                         telegram_data = asyncio.run(
                             scrape_telegram_data(min_date, max_date)
                         )
-
+                
                     if telegram_data:
                         telegram_df = pd.DataFrame(telegram_data)
                         st.session_state.telegram_df = telegram_df
-
+                
                         # Performance analysis
                         planned_customers = set(
                             sales_plan_df["Customer"].str.strip().str.lower().dropna()
@@ -493,13 +493,18 @@ def main():
                             .str.lower()
                             .dropna()
                         )
-
-                        matched_pairs, unmatched_planned, unmatched_visited = (
-                            smart_customer_matching(
-                                planned_customers, visited_customers, threshold=80
-                            )
+                
+                        # Get matching results safely
+                        result = smart_customer_matching(
+                            planned_customers, visited_customers, threshold=80
                         )
-
+                        
+                        if len(result) == 3:
+                            matched_pairs, unmatched_planned, unmatched_visited = result
+                        else:
+                            st.error("Matching function returned unexpected results")
+                            matched_pairs, unmatched_planned, unmatched_visited = {}, set(), set()
+                
                         expanded_visited_customers = visited_customers.union(
                             set(matched_pairs.keys())
                         )
@@ -509,14 +514,14 @@ def main():
                         missed_customers = (
                             planned_customers - expanded_visited_customers
                         )
-
+                
                         # Performance metrics
                         visit_rate = (
                             (len(matched_customers) / len(planned_customers)) * 100
                             if planned_customers
                             else 0
                         )
-
+                
                         col1, col2, col3 = st.columns(3)
                         col1.metric("Planned Customers", len(planned_customers))
                         col2.metric("Visited Customers", len(matched_customers))
@@ -527,7 +532,7 @@ def main():
                                 f"{visit_rate - 100:.1f}%" if visit_rate < 100 else None
                             ),
                         )
-
+                
                         # Visualization
                         fig = px.pie(
                             values=[len(matched_customers), len(missed_customers)],
@@ -553,13 +558,11 @@ def main():
                                 comparison_data.append(
                                     {"Customer": customer, "Status": status}
                                 )
-
+                
                             comparison_df = pd.DataFrame(comparison_data)
                             st.dataframe(comparison_df, use_container_width=True)
-
             except Exception as e:
                 st.error(f"Error processing file: {e}")
-
     with tab2:
         st.markdown(
             """
