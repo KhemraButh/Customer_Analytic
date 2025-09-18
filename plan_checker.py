@@ -310,6 +310,9 @@ async def scrape_telegram_data(min_date, now):
         return None
 
 # Smart customer matching function
+import re
+from fuzzywuzzy import fuzz, process
+
 def smart_customer_matching(planned_customers, visited_customers, threshold=80):
     def preprocess_name(name):
         name = re.sub(r"[^\w\s]", "", name)
