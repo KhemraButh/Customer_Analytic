@@ -134,8 +134,8 @@ header_col1, header_col2, header_col3 = st.columns([1, 3, 1])
 
 with header_col1:
     try:
-        #logo_path = "/Users/thekhemfee/Downloads/Intelligent_Loan_Approval/frontend/Logo-CMCB.png"
-        logo_path = os.path.join(BASE_DIR, "Logo-CMCB.png") 
+        #logo_path = "Logo-CMCB-15.png"
+        logo_path = os.path.join(BASE_DIR, "Logo-CMCB_FA-15.png") 
         if os.path.exists(logo_path):
             logo_base64 = get_base64_encoded_image(logo_path)
             st.markdown(
