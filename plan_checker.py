@@ -17,6 +17,8 @@ import numpy as np
 #import sqlite3
 import sqlite3
 from folium.plugins import HeatMap
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 
 # === MUST BE THE FIRST STREAMLIT COMMAND ===
 st.set_page_config(
@@ -131,7 +133,8 @@ header_col1, header_col2, header_col3 = st.columns([1, 3, 1])
 
 with header_col1:
     try:
-        logo_path = "/Users/thekhemfee/Downloads/Intelligent_Loan_Approval/frontend/Logo-CMCB.png"
+        #logo_path = "/Users/thekhemfee/Downloads/Intelligent_Loan_Approval/frontend/Logo-CMCB.png"
+        logo_path = os.path.join(BASE_DIR, "Logo-CMCB.png") 
         if os.path.exists(logo_path):
             logo_base64 = get_base64_encoded_image(logo_path)
             st.markdown(
@@ -679,7 +682,7 @@ def main():
 
         # Fetch data from CSV file
         try:
-            telegram_df = pd.read_csv("/Users/thekhemfee/Downloads/Customer_Network/CusXRealTime/cusinfo.csv")
+            telegram_df = pd.read_csv("cusinfo.csv")
         except Exception as e:
             st.error(f"Error loading CSV file: {e}")
             telegram_df = pd.DataFrame()
