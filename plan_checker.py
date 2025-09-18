@@ -411,160 +411,85 @@ def main():
     with tab1:
         st.markdown(
             """
-        <div class="function-card">
-            <h2>📋 Sales Planning & Performance Tracking</h2>
-            <p>Upload your sales plan and compare with actual customer visits from Telegram</p>
-        </div>
-        """,
+            <div class="function-card">
+                <h2>📋 Sales Planning & Performance Tracking</h2>
+                <p>Upload your sales plan and compare with actual customer visits from Telegram</p>
+            </div>
+            """,
             unsafe_allow_html=True,
         )
-        
-        # File upload section
+    
         uploaded_file = st.file_uploader(
             "📤 Upload Sales Team Plan (Excel file)",
             type=["xlsx"],
             help="File should contain 'Sales Name' and 'Customer' columns",
         )
-        
+    
         if uploaded_file:
             try:
                 sales_plan_df = pd.read_excel(uploaded_file)
-
-                if (
-                    "Sales Name" not in sales_plan_df.columns
-                    or "Customer" not in sales_plan_df.columns
-                ):
-                    st.error(
-                        "❌ The Excel file must contain 'Sales Name' and 'Customer' columns"
-                    )
-                    return
-                
-                # Show metrics
-                total_planned = len(sales_plan_df)
-                unique_sales = sales_plan_df["Sales Name"].nunique()
-                
-                col1, col2 = st.columns(2)
-                with col1:
-                    st.markdown(
-                        f"""
-                    <div class="metric-card">
-                        <h3>{total_planned}</h3>
-                        <p>Planned Customer Visits</p>
-                    </div>
-                    """,
-                        unsafe_allow_html=True,
-                    )
-                
-                with col2:
-                    st.markdown(
-                        f"""
-                    <div class="metric-card">
-                        <h3>{unique_sales}</h3>
-                        <p>Sales Team Members</p>
-                    </div>
-                    """,
-                        unsafe_allow_html=True,
-                    )
-
-                # Date range selection
-                st.subheader("📅 Select Date Range for Analysis")
-                col1, col2 = st.columns(2)
-                with col1:
-                    start_date = st.date_input("Start Date", datetime(2025, 9, 1))
-                with col2:
-                    end_date = st.date_input("End Date", datetime.now())
-                
-                if st.button("🚀 Scrape & Analyze Performance", type="primary"):
-                    with st.spinner("🔄 Scraping Telegram data..."):
-                        min_date = datetime.combine(start_date, datetime.min.time())
-                        max_date = datetime.combine(end_date, datetime.max.time())
-                        telegram_data = asyncio.run(
-                            scrape_telegram_data(min_date, max_date)
-                        )
-                
-                    if telegram_data:
-                        telegram_df = pd.DataFrame(telegram_data)
-                        st.session_state.telegram_df = telegram_df
-                
-                        # Performance analysis
-                        planned_customers = set(
-                            sales_plan_df["Customer"].str.strip().str.lower().dropna()
-                        )
-                        visited_customers = set(
-                            telegram_df["Customer Name"]
-                            .str.strip()
-                            .str.lower()
-                            .dropna()
-                        )
-                
-                        # Get matching results safely
-                        result = smart_customer_matching(
-                            planned_customers, visited_customers, threshold=80
-                        )
-                        
-                        if len(result) == 3:
-                            matched_pairs, unmatched_planned, unmatched_visited = result
-                        else:
-                            st.error("Matching function returned unexpected results")
-                            matched_pairs, unmatched_planned, unmatched_visited = {}, set(), set()
-                
-                        expanded_visited_customers = visited_customers.union(
-                            set(matched_pairs.keys())
-                        )
-                        matched_customers = planned_customers.intersection(
-                            expanded_visited_customers
-                        )
-                        missed_customers = (
-                            planned_customers - expanded_visited_customers
-                        )
-                
-                        # Performance metrics
-                        visit_rate = (
-                            (len(matched_customers) / len(planned_customers)) * 100
-                            if planned_customers
-                            else 0
-                        )
-                
-                        col1, col2, col3 = st.columns(3)
-                        col1.metric("Planned Customers", len(planned_customers))
-                        col2.metric("Visited Customers", len(matched_customers))
-                        col3.metric(
-                            "Visit Rate",
-                            f"{visit_rate:.1f}%",
-                            delta=(
-                                f"{visit_rate - 100:.1f}%" if visit_rate < 100 else None
-                            ),
-                        )
-                
-                        # Visualization
-                        fig = px.pie(
-                            values=[len(matched_customers), len(missed_customers)],
-                            names=["Visited", "Not Visited"],
-                            title="Customer Visit Performance",
-                            color=["Visited", "Not Visited"],
-                            color_discrete_map={
-                                "Visited": "#2E8B57",
-                                "Not Visited": "#FF6B6B",
-                            },
-                        )
-                        st.plotly_chart(fig, use_container_width=True)
-                        
-                        # Detailed results
-                        with st.expander("📊 View Detailed Analysis"):
-                            comparison_data = []
-                            for customer in planned_customers:
-                                status = (
-                                    "Visited"
-                                    if customer in expanded_visited_customers
-                                    else "Not Visited"
-                                )
-                                comparison_data.append(
-                                    {"Customer": customer, "Status": status}
-                                )
-                
-                            comparison_df = pd.DataFrame(comparison_data)
-            st.dataframe(comparison_df, use_container_width=True)            
-        except Exception as e:
+    
+                if "Sales Name" not in sales_plan_df.columns or "Customer" not in sales_plan_df.columns:
+                    st.error("❌ The Excel file must contain 'Sales Name' and 'Customer' columns")
+                else:
+                    # Metrics
+                    total_planned = len(sales_plan_df)
+                    unique_sales = sales_plan_df["Sales Name"].nunique()
+                    col1, col2 = st.columns(2)
+                    col1.markdown(f"<div class='metric-card'><h3>{total_planned}</h3><p>Planned Customer Visits</p></div>", unsafe_allow_html=True)
+                    col2.markdown(f"<div class='metric-card'><h3>{unique_sales}</h3><p>Sales Team Members</p></div>", unsafe_allow_html=True)
+    
+                    # Date range
+                    col1, col2 = st.columns(2)
+                    start_date = col1.date_input("Start Date", datetime(2025, 9, 1))
+                    end_date = col2.date_input("End Date", datetime.now())
+    
+                    if st.button("🚀 Scrape & Analyze Performance", type="primary"):
+                        with st.spinner("🔄 Scraping Telegram data..."):
+                            min_date = datetime.combine(start_date, datetime.min.time())
+                            max_date = datetime.combine(end_date, datetime.max.time())
+                            telegram_data = asyncio.run(scrape_telegram_data(min_date, max_date))
+    
+                        if telegram_data:
+                            telegram_df = pd.DataFrame(telegram_data)
+                            st.session_state.telegram_df = telegram_df
+    
+                            # Performance analysis
+                            planned_customers = set(sales_plan_df["Customer"].str.strip().str.lower().dropna())
+                            visited_customers = set(telegram_df["Customer Name"].str.strip().str.lower().dropna())
+    
+                            # Safe unpacking
+                            try:
+                                matched_pairs, unmatched_planned, unmatched_visited = smart_customer_matching(planned_customers, visited_customers, threshold=80)
+                            except Exception as e:
+                                st.error(f"Error in matching: {e}")
+                                matched_pairs, unmatched_planned, unmatched_visited = {}, set(), set()
+    
+                            expanded_visited_customers = visited_customers.union(set(matched_pairs.keys()))
+                            matched_customers = planned_customers.intersection(expanded_visited_customers)
+                            missed_customers = planned_customers - expanded_visited_customers
+    
+                            # Metrics
+                            visit_rate = (len(matched_customers)/len(planned_customers))*100 if planned_customers else 0
+                            col1, col2, col3 = st.columns(3)
+                            col1.metric("Planned Customers", len(planned_customers))
+                            col2.metric("Visited Customers", len(matched_customers))
+                            col3.metric("Visit Rate", f"{visit_rate:.1f}%", delta=(f"{visit_rate-100:.1f}%" if visit_rate < 100 else None))
+    
+                            # Visualization
+                            fig = px.pie(values=[len(matched_customers), len(missed_customers)],
+                                         names=["Visited", "Not Visited"],
+                                         title="Customer Visit Performance",
+                                         color_discrete_map={"Visited": "#2E8B57", "Not Visited": "#FF6B6B"})
+                            st.plotly_chart(fig, use_container_width=True)
+    
+                            # Detailed results
+                            with st.expander("📊 View Detailed Analysis"):
+                                comparison_data = [{"Customer": c, "Status": "Visited" if c in expanded_visited_customers else "Not Visited"} for c in planned_customers]
+                                comparison_df = pd.DataFrame(comparison_data)
+                                st.dataframe(comparison_df, use_container_width=True)
+    
+            except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
         st.markdown(
