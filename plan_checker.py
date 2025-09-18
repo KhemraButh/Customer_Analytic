@@ -313,9 +313,10 @@ async def scrape_telegram_data(min_date, now):
 import re
 #from fuzzywuzzy import fuzz, process
 
+
 def smart_customer_matching(planned_customers, visited_customers, threshold=80):
     def preprocess_name(name):
-        name = re.sub(r"[^\w\s]", "", name)
+        name = re.sub(r"[^\w\s]", "", str(name))
         name = re.sub(r"\s+", " ", name)
         return name.strip().lower()
 
@@ -327,9 +328,23 @@ def smart_customer_matching(planned_customers, visited_customers, threshold=80):
     unmatched_visited = set(visited_processed.keys())
 
     for p_name in list(unmatched_planned):
-        best_match, score = process.extractOne(
+        if not unmatched_visited:
+            break  # no more visited customers to match
+
+        best_match_result = process.extractOne(
             p_name, list(unmatched_visited), scorer=fuzz.token_sort_ratio
         )
+
+        if best_match_result is None:
+            continue
+
+        # Depending on the library version, extractOne may return 2 or 3 items
+        if len(best_match_result) >= 2:
+            best_match = best_match_result[0]
+            score = best_match_result[1]
+        else:
+            continue
+
         if score >= threshold:
             matched_pairs[planned_processed[p_name]] = visited_processed[best_match]
             unmatched_planned.remove(p_name)
@@ -339,7 +354,6 @@ def smart_customer_matching(planned_customers, visited_customers, threshold=80):
     unmatched_visited_original = {visited_processed[name] for name in unmatched_visited}
 
     return matched_pairs, unmatched_planned_original, unmatched_visited_original
-
 # Helper function for map visualization
 def create_customer_map(data):
     """Create an interactive map of customer locations"""
