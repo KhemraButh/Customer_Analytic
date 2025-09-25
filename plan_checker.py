@@ -614,7 +614,7 @@ def main():
                 # Statistics
                 total_visits = len(telegram_df)
                 high_potential = len(
-                    telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
+                    telegram_df[telegram_df["Potential_Level"].str.strip().str.upper() == "H"]
                 )
                 col1, col2, col3 = st.columns(3)
                 col1.metric("Total Visits", total_visits)
