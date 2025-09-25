@@ -524,11 +524,7 @@ def main():
                 telegram_df = pd.DataFrame(telegram_data)
                 
                 # Ensure numeric columns are properly formatted
-                if "Monthly Income" in telegram_df.columns:
-                    telegram_df["Monthly Income"] = pd.to_numeric(
-                        telegram_df["Monthly Income"], errors="coerce"
-                    )
-                
+            
                 if "Interest Rate" in telegram_df.columns:
                     telegram_df["Interest Rate"] = pd.to_numeric(
                         telegram_df["Interest Rate"], errors="coerce"
@@ -798,7 +794,6 @@ def main():
                                 color=potential_counts.index,
                                 color_discrete_map={'H': 'red', 'M': 'orange', 'L': 'green', 'NAN': 'gray'})
                         st.plotly_chart(fig, use_container_width=True)
-
             # Data preview
             with st.expander("📋 View Raw Data"):
                 st.dataframe(telegram_df, use_container_width=True)
