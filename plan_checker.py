@@ -211,9 +211,9 @@ async def scrape_telegram_data(min_date, now):
                 return None
 
             entity = await client.get_entity(target)
-            st.success(
-                f"✅ Successfully connected to: {getattr(entity, 'title', entity)}"
-            )
+            #st.success(
+            #    f"✅ Successfully connected to: {getattr(entity, 'title', entity)}"
+            #)
             # Fetch messages
             history = await client(
                 GetHistoryRequest(
@@ -510,16 +510,6 @@ def main():
             except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
-        st.markdown(
-            """
-        <div class="function-card">
-            <h2>📍 Market Visit Data Presentation</h2>
-            <p>Extract and present customer visit data from Telegram</p>
-        </div>
-        """,
-            unsafe_allow_html=True,
-        )
-
         col1, col2 = st.columns(2)
         with col1:
             pres_start_date = st.date_input(
@@ -631,22 +621,6 @@ def main():
                     return styler
 
                 st.subheader("👥 Customer Visit Data")
-                
-                # Display styled dataframe
-                styled_df = style_telegram_dataframe(display_df)
-                st.dataframe(
-                    styled_df,
-                    use_container_width=True,
-                    height=400,
-                )
-
-
-                # Statistics
-                total_visits = len(telegram_df)
-                high_potential = len(
-                    telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
-                )
-
                 col1, col2, col3 = st.columns(3)
                 col1.metric("Total Visits", total_visits)
                 col2.metric("High Potential", high_potential)
@@ -658,6 +632,23 @@ def main():
                         else "0%"
                     ),
                 )
+                
+                # Display styled dataframe
+                styled_df = style_telegram_dataframe(display_df)
+                st.dataframe(
+                    styled_df,
+                    use_container_width=True,
+                    height=800,
+                )
+
+
+                # Statistics
+                total_visits = len(telegram_df)
+                high_potential = len(
+                    telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
+                )
+
+                
 
                 # Download option
                 csv = telegram_df.to_csv(index=False)
