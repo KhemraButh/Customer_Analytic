@@ -468,7 +468,7 @@ def main():
     
                             # Performance analysis
                             planned_customers = set(sales_plan_df["Customer"].str.strip().str.lower().dropna())
-                            visited_customers = set(telegram_df["Customer Name"].str.strip().str.lower().dropna())
+                            visited_customers = set(telegram_df["Name"].str.strip().str.lower().dropna())
     
                             # Safe unpacking
                             try:
@@ -513,21 +513,18 @@ def main():
             pres_end_date = st.date_input(
                 "Presentation End Date", datetime.now(), key="pres_end"
             )
-        
         if st.button("📊 Generate Visit Report", type="primary"):
             with st.spinner("🔄 Gathering visit data..."):
                 min_date = datetime.combine(pres_start_date, datetime.min.time())
                 max_date = datetime.combine(pres_end_date, datetime.max.time())
                 telegram_data = asyncio.run(scrape_telegram_data(min_date, max_date))
-            
             if telegram_data:
                 telegram_df = pd.DataFrame(telegram_data)
-                
                 # Ensure numeric columns are properly formatted
-            
-                if "Interest Rate" in telegram_df.columns:
-                    telegram_df["Interest Rate"] = pd.to_numeric(
-                        telegram_df["Interest Rate"], errors="coerce"
+                
+                if "Interest" in telegram_df.columns:
+                    telegram_df["Interest"] = pd.to_numeric(
+                        telegram_df["Interest"], errors="coerce"
                     )
                 
                 if "Amount" in telegram_df.columns:
@@ -538,6 +535,10 @@ def main():
                 if "Tenure" in telegram_df.columns:
                     telegram_df["Tenure"] = pd.to_numeric(
                         telegram_df["Tenure"], errors="coerce"
+                    )
+                if "Maturity" in telegram_df.columns:
+                    telegram_df["Maturity"] = pd.to_numeric(
+                        telegram_df["Maturity"], errors="coerce"
                     )
                 
                 # Save to session state so Tab 3 can use it
@@ -557,13 +558,17 @@ def main():
                         lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
                     )
                 
-                if "Interest Rate" in display_df.columns:
-                    display_df["Interest Rate"] = display_df["Interest Rate"].apply(
+                if "Interest" in display_df.columns:
+                    display_df["Interest"] = display_df["Interest"].apply(
                         lambda x: f"{x:.1f}%" if pd.notna(x) and x != 0 else ""
                     )
                 
                 if "Tenure" in display_df.columns:
                     display_df["Tenure"] = display_df["Tenure"].apply(
+                        lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
+                    )
+                if "Maturity" in display_df.columns:
+                    display_df["Maturity"] = display_df["Maturity"].apply(
                         lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
                     )
 
@@ -573,7 +578,7 @@ def main():
                     styler = df.style
                     
                     # Highlight high potential customers
-                    if "Potential" in df.columns:
+                    if "Potential_Level" in df.columns:
                         styler = styler.apply(
                             lambda row: ["background-color: #ff9999" if str(row.get("Potential", "")).strip().upper() == "H" else "" for _ in row], 
                             axis=1
@@ -589,7 +594,7 @@ def main():
                             return "color: #388e3c; font-weight: bold;"  # Green for Low
                         return ""
                     
-                    if "Potential" in df.columns:
+                    if "Potential_Level" in df.columns:
                         styler = styler.map(color_potential, subset=["Potential"])
                     
                     # Set properties for better display
@@ -635,12 +640,6 @@ def main():
                     use_container_width=True,
                     height=800,
                 )
-
-
-                
-
-                
-
                 # Download option
                 csv = telegram_df.to_csv(index=False)
                 st.download_button(
