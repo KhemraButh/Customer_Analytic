@@ -31,7 +31,7 @@ nest_asyncio.apply()
 # Your credentials
 api_id = 20056752
 api_hash = "3430c49d933b5d0a5f3d68cdbf2eb237"
-phone_number = "+855"
+phone_number = os.environ["PHONE_NUMBER"]
 target = "https://t.me/+E5gXgV3Mig4wYzU1"
 session_name = "customer_session"
 
