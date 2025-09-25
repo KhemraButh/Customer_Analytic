@@ -288,7 +288,7 @@ async def scrape_telegram_data(min_date, now):
                         "Bank": extracted.get("Bank"),
                         "Amount": extracted.get("Amount"),
                         "Interest": extracted.get("Interest"),
-                        "Loan_Type": extracted.get("Loan Type"),
+                        "Loan Type": extracted.get("Loan Type"),
                         "Tenure": extracted.get("Tenure"),
                         "Maturity": extracted.get("Maturity"),
                         "Potential_Level": extracted.get("Potential H/M/L"),
