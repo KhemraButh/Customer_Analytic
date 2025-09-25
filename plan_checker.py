@@ -29,11 +29,11 @@ st.set_page_config(
 nest_asyncio.apply()
 
 # Your credentials
-api_id = 20056752
-api_hash = "3430c49d933b5d0a5f3d68cdbf2eb237"
+api_id = 20056320
+api_hash = "4b1394e0f07625a3c25ea32fa3030218"
 phone_number = os.environ["PHONE_NUMBER"]
-target = "https://t.me/+E5gXgV3Mig4wYzU1"
-session_name = "customer_session"
+target = 'https://t.me/+swlOwBbTrrlmYTNl'
+session_name = "customer_session_2"
 
 # === Custom CSS for beautiful styling ===
 st.markdown(
@@ -106,20 +106,17 @@ st.markdown(
 )
 
 patterns = {
-    "Customer Name": r"Customer Name:\s*([^\n]*)",
-    "Gender": r"Gender:\s*([^\n]*)",
-    "Phone Number": r"Phone Num(?:ber)?:\s*([^\n]*)",
-    "Biz Type": r"Biz Type:\s*([^\n]*)",
-    "Monthly Income": r"Monthly Income:\s*([^\n]*)",
-    "Product Interest": r"Product Interest:\s*([^\n]*)",
-    "Potential": r"Potential:\s*([^\n]*)",
-    "Customer Behavior": r"Customer Behavior:\s*([^\n]*)",
-    "Bank Info": r"Bank Info:\s*([^\n]*)",
-    "Amount": r"Amount:\s*([^\n]*)",
-    "Interest Rate": r"Interest\s*Rate\s*:\s*([^\n]*)",
-    "Loan Type": r"Loan\s*Type:\s*([^\n]*)",
-    "Tenure": r"Tenure:\s*([^\n]*)",
-    "Start Year": r"Start\s*Year:\s*([^\n]*)",
+    "Name":              r"Name:\s*([^\n]*)",
+    "Tel":               r"Tel:\s*([^\n]*)",
+    "Business":          r"Business:\s*([^\n]*)",
+    "Bank":              r"Bank:\s*([^\n]*)",
+    "Amount":            r"Amount:\s*([^\n]*)",
+    "Interest":          r"Interest:\s*([^\n]*)",
+    "Loan Type":         r"Loan\s*Type:\s*([^\n]*)",
+    "Tenure":            r"Tenure:\s*([^\n]*)",
+    "Maturity":          r"Maturity:\s*([^\n]*)",
+    "Potential H/M/L":   r"Potential\s*H/M/L:\s*([^\n]*)",
+    "Potential Product": r"Potential\s*Product:\s*([^\n]*)"
 }
 import base64
 import os
@@ -190,10 +187,11 @@ def extract_info_from_text(text):
         match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
         if match:
             value = match.group(1).strip()
+            # ✅ Extra guard: if value looks like a field name, treat as blank
             if re.match(
-                r"^(Customer Name|Gender|Phone|Biz Type|Monthly Income|Product Interest|Potential|Customer Behavior|Bank Info|Amount|Interest Rate|Loan Type|Tenure|Start Year)",
+                r"^(Name|Tel|Business|Bank|Amount|Interest|Loan Type|Tenure|Maturity|Potential H/M/L|Potential Product)",
                 value,
-                re.IGNORECASE,
+                re.IGNORECASE
             ):
                 value = ""
             data[key] = value
@@ -283,25 +281,22 @@ async def scrape_telegram_data(min_date, now):
                 extracted = extract_info_from_text(text)
                 if any(extracted.values()):
                     customer_data = {
-                        "Sender Name": sender_name,
-                        "Customer Name": extracted.get("Customer Name"),
-                        "Gender": extracted.get("Gender"),
-                        "Phone Number": extracted.get("Phone Number"),
-                        "Biz Type": extracted.get("Biz Type"),
-                        "Monthly Income": extracted.get("Monthly Income"),
-                        "Product Interest": extracted.get("Product Interest"),
-                        "Potential": extracted.get("Potential"),
-                        "Customer Behavior": extracted.get("Customer Behavior"),
-                        "Bank Info": extracted.get("Bank Info"),
+                        "Sender_Name": sender_name,
+                        "Name": extracted.get("Name"),
+                        "Tel": extracted.get("Tel"),
+                        "Business": extracted.get("Business"),
+                        "Bank": extracted.get("Bank"),
                         "Amount": extracted.get("Amount"),
-                        "Interest Rate": extracted.get("Interest Rate"),
-                        "Loan Type": extracted.get("Loan Type"),
+                        "Interest": extracted.get("Interest"),
+                        "Loan_Type": extracted.get("Loan Type"),
                         "Tenure": extracted.get("Tenure"),
-                        "Start Year": extracted.get("Start Year"),
-                        "Message Date": msg_date,
+                        "Maturity": extracted.get("Maturity"),
+                        "Potential_Level": extracted.get("Potential H/M/L"),
+                        "Potential_Product": extracted.get("Potential Product"),
+                        "Message_Date": msg_date,
                         "Latitude": None,
                         "Longitude": None,
-                        "Location_Date": None,
+                        "Location_Date": None
                     }
                     pending_customer = customer_data
             if pending_customer:
@@ -316,7 +311,6 @@ async def scrape_telegram_data(min_date, now):
 # Smart customer matching function
 import re
 #from fuzzywuzzy import fuzz, process
-
 
 def smart_customer_matching(planned_customers, visited_customers, threshold=80):
     def preprocess_name(name):
