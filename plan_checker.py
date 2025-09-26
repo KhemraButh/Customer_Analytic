@@ -556,7 +556,7 @@ def main():
                 # Custom styling function
             #def style_telegram_dataframe(df):
                     # Create a styler object
-                    styler = df.style
+                    #styler = df.style
                     
                     # Highlight high potential customers
             #if "Potential_Level" in df.columns:
