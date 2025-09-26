@@ -602,7 +602,7 @@ def main():
         st.download_button(
                     label="📥 Download Visit Data",
                     data=csv,
-                    file_name=f"customer_visits_{pres_start_date}_{pres_end_date}.csv",
+                    file_name=f"customer_visits.csv",
                     mime="text/csv",
             )
     
