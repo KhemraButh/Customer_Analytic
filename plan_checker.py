@@ -602,29 +602,29 @@ def main():
         high_potential = len(
                     telegram_df[telegram_df["Potential_Level"].str.strip().str.upper() == "H"]
         )
-            col1, col2, col3, col4 = st.columns(4)
-            col1.metric("Total Visits", total_visits)
-            col2.metric("Total HC", 4)
-            col3.metric("High Potential", high_potential)
-            col4.metric(
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Visits", total_visits)
+        col2.metric("Total HC", 4)
+        col3.metric("High Potential", high_potential)
+        col4.metric(
                     "HP Percentage",
                     (
                         f"{(high_potential/total_visits*100):.1f}%"
                         if total_visits
                         else "0%"
                     ),
-                )
+        )
                 
                 # Display styled dataframe
-            styled_df = style_telegram_dataframe(display_df)
-            st.dataframe(
-                    styled_df,
+        #styled_df = style_telegram_dataframe(display_df)
+        st.dataframe(
+                    display_df,
                     use_container_width=True,
                     height=800,
             )
                 # Download option
-            csv = telegram_df.to_csv(index=False)
-            st.download_button(
+        csv = telegram_df.to_csv(index=False)
+        st.download_button(
                     label="📥 Download Visit Data",
                     data=csv,
                     file_name=f"customer_visits_{pres_start_date}_{pres_end_date}.csv",
