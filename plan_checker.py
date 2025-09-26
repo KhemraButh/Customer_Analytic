@@ -510,8 +510,8 @@ def main():
             styler = df.style   
         
         # Highlight high potential customers
-        if "Potential" in df.columns:
-            styler = styler.apply(
+            if "Potential" in df.columns:
+                styler = styler.apply(
                 lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
                 axis=1
             )
