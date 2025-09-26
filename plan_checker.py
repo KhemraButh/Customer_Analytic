@@ -566,15 +566,15 @@ def main():
                     })
                     
                     # Set table headers style
-                    styler = styler.set_table_styles([{
+            styler = styler.set_table_styles([{
                         'selector': 'th',
                         'props': [('background-color', '#2E8B57'), 
                                 ('color', 'white'),
                                 ('font-weight', 'bold'),
                                 ('text-align', 'center')]
-                    }])
+            }])
                     
-                    return styler
+            return styler
 
         st.subheader("👥 Customer Visit Data")
                 # Statistics
