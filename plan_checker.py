@@ -545,7 +545,51 @@ def main():
             }])          
             return styler
         st.subheader("👥 Customer Visit Data")
-                # Statistics
+        st.subheader("🔍 Filter Data")
+    
+        # Check if Branch column exists, if not create a default one
+        if "Branch" not in telegram_df.columns:
+            telegram_df["Branch"] = "Main Branch"  # Default value
+        
+        # Create filters
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            # Branch filter
+            branch_list = ["All"] + sorted(telegram_df["Branch"].unique().tolist())
+            selected_branch = st.selectbox(
+                "Select Branch:",
+                options=branch_list,
+                index=0
+            )
+        
+        with col2:
+            # Potential filter
+            potential_list = ["All", "H", "M", "L"]
+            selected_potential = st.selectbox(
+                "Select Potential:",
+                options=potential_list,
+                index=0
+            )
+        # Statistics
+        filtered_df = telegram_df.copy()
+    
+        if selected_branch != "All":
+            filtered_df = filtered_df[filtered_df["Branch"] == selected_branch]
+        
+        if selected_potential != "All":
+            filtered_df = filtered_df[filtered_df["Potential"].str.strip().str.upper() == selected_potential]
+            
+        # Update display dataframe with filtered data
+        display_df = filtered_df.copy()
+        
+        # Statistics with filtered data
+        total_visits = len(filtered_df)
+        high_potential = len(
+            filtered_df[filtered_df["Potential"].str.strip().str.upper() == "H"]
+        )
+
+
         total_visits = len(telegram_df)
         high_potential = len(
                     telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
@@ -562,6 +606,7 @@ def main():
                         else "0%"
                     ),) 
         # Display styled dataframe
+        
         styled_df = style_telegram_dataframe(display_df)
         st.dataframe(
                     display_df,
