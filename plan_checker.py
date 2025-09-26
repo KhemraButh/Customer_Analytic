@@ -508,8 +508,8 @@ def main():
             # Create a styler object
             styler = df.style   
         # Highlight high potential customers
-        if "Potential" in df.columns:
-            styler = styler.apply(
+            if "Potential" in df.columns:
+                styler = styler.apply(
                         lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
                         axis=1
                        )
@@ -525,19 +525,19 @@ def main():
                             return "color: #388e3c; font-weight: bold;"  # Green for Low
             return ""
                     
-        if "Potential" in df.columns:
-            styler = styler.map(color_potential, subset=["Potential_Level"])
+            if "Potential" in df.columns:
+                styler = styler.map(color_potential, subset=["Potential_Level"])
                     
             # Set properties for better display
-            styler = styler.set_properties(**{
+                styler = styler.set_properties(**{
                       'text-align': 'left',
                         'white-space': 'pre-wrap',
                         'font-size': '14px'
                     })
                     
                     # Set table headers style
-            styler = styler.set_table_styles([{
-                        'selector': 'th',
+                styler = styler.set_table_styles([{
+                            'selector': 'th',
                         'props': [('background-color', '#2E8B57'), 
                                 ('color', 'white'),
                                 ('font-weight', 'bold'),
