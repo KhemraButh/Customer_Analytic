@@ -32,7 +32,7 @@ nest_asyncio.apply()
 api_id = 20056320
 api_hash = "4b1394e0f07625a3c25ea32fa3030218"
 phone_number = os.environ["PHONE_NUMBER"]
-targets = ['https://t.me/+JeQdy_3JC20wYTY1']
+target = ['https://t.me/+JeQdy_3JC20wYTY1']
 session_name = "customer_session_2"
 
 # === Custom CSS for beautiful styling ===
@@ -502,22 +502,8 @@ def main():
             except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
-        col1, col2 = st.columns(2)
-        with col1:
-            pres_start_date = st.date_input(
-                "Presentation Start Date", datetime(2025, 9, 1), key="pres_start"
-            )
-        with col2:
-            pres_end_date = st.date_input(
-                "Presentation End Date", datetime.now(), key="pres_end"
-            )
-        if st.button("📊 Generate Visit Report", type="primary"):
-            with st.spinner("🔄 Gathering visit data..."):
-                min_date = datetime.combine(pres_start_date, datetime.min.time())
-                max_date = datetime.combine(pres_end_date, datetime.max.time())
-                telegram_data = asyncio.run(scrape_telegram_data(min_date, max_date))
-            if telegram_data:
-                telegram_df = pd.DataFrame(telegram_data)
+        
+        telegram_df = pd.DataFrame(telegram_data)
                 # Ensure numeric columns are properly formatted
                 
                 if "Interest" in telegram_df.columns:
@@ -539,8 +525,7 @@ def main():
                         telegram_df["Maturity"], errors="coerce"
                     )
                 
-                # Save to session state so Tab 3 can use it
-                st.session_state.telegram_df = telegram_df
+            
 
                 # Create a display copy with formatted values
                 display_df = telegram_df.copy()
