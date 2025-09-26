@@ -503,7 +503,7 @@ def main():
                 st.error(f"Error processing file: {e}")
     with tab2:
         
-        telegram_df = pd.DataFrame(telegram_data)
+        telegram_df = pd.read_exel("customer_parsed.xlsx")
                 # Ensure numeric columns are properly formatted
                 
         if "Interest" in telegram_df.columns:
