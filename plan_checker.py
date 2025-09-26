@@ -525,8 +525,6 @@ def main():
                         telegram_df["Maturity"], errors="coerce"
                     )
                 
-            
-
                 # Create a display copy with formatted values
             display_df = telegram_df.copy()
                 
@@ -556,47 +554,47 @@ def main():
                     )
 
                 # Custom styling function
-            def style_telegram_dataframe(df):
+            #def style_telegram_dataframe(df):
                     # Create a styler object
                     styler = df.style
                     
                     # Highlight high potential customers
-                if "Potential_Level" in df.columns:
-                        styler = styler.apply(
-                            lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
-                            axis=1
-                        )
+            #if "Potential_Level" in df.columns:
+            #            styler = styler.apply(
+            #                lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
+            #                axis=1
+            #           )
                     
                     # Color code based on potential
-                def color_potential(val):
-                        if str(val).strip().upper() == "H":
-                            return "color: #d32f2f; font-weight: bold;"  # Red for High
-                        elif str(val).strip().upper() == "M":
-                            return "color: #f57c00; font-weight: bold;"  # Orange for Medium
-                        elif str(val).strip().upper() == "L":
-                            return "color: #388e3c; font-weight: bold;"  # Green for Low
-                        return ""
+            #    def color_potential(val):
+            #            if str(val).strip().upper() == "H":
+            #                return "color: #d32f2f; font-weight: bold;"  # Red for High
+            #            elif str(val).strip().upper() == "M":
+            #                return "color: #f57c00; font-weight: bold;"  # Orange for Medium
+            #            elif str(val).strip().upper() == "L":
+            #                return "color: #388e3c; font-weight: bold;"  # Green for Low
+            #            return ""
                     
-                if "Potential_Level" in df.columns:
-                        styler = styler.map(color_potential, subset=["Potential_Level"])
+            #    if "Potential_Level" in df.columns:
+            #            styler = styler.map(color_potential, subset=["Potential_Level"])
                     
                     # Set properties for better display
-                    styler = styler.set_properties(**{
-                        'text-align': 'left',
-                        'white-space': 'pre-wrap',
-                        'font-size': '14px'
-                    })
+            #        styler = styler.set_properties(**{
+            #           'text-align': 'left',
+            #            'white-space': 'pre-wrap',
+            #            'font-size': '14px'
+            #        })
                     
                     # Set table headers style
-                    styler = styler.set_table_styles([{
-                        'selector': 'th',
-                        'props': [('background-color', '#2E8B57'), 
-                                ('color', 'white'),
-                                ('font-weight', 'bold'),
-                                ('text-align', 'center')]
-                    }])
+            #        styler = styler.set_table_styles([{
+            #            'selector': 'th',
+            #            'props': [('background-color', '#2E8B57'), 
+            #                    ('color', 'white'),
+            #                    ('font-weight', 'bold'),
+            #                    ('text-align', 'center')]
+            #        }])
                     
-                    return styler
+             #       return styler
 
                 st.subheader("👥 Customer Visit Data")
                 # Statistics
