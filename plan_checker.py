@@ -32,7 +32,7 @@ nest_asyncio.apply()
 api_id = 20056320
 api_hash = "4b1394e0f07625a3c25ea32fa3030218"
 phone_number = os.environ["PHONE_NUMBER"]
-target = 'https://t.me/+swlOwBbTrrlmYTNl'
+targets = ['https://t.me/+JeQdy_3JC20wYTY1']
 session_name = "customer_session_2"
 
 # === Custom CSS for beautiful styling ===
@@ -209,9 +209,7 @@ async def scrape_telegram_data(min_date, now):
                 return None
 
             entity = await client.get_entity(target)
-            #st.success(
-            #    f"✅ Successfully connected to: {getattr(entity, 'title', entity)}"
-            #)
+            
             # Fetch messages
             history = await client(
                 GetHistoryRequest(
