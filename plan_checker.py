@@ -504,7 +504,7 @@ def main():
     with tab2:
         telegram_df = pd.read_excel("customers_parsed.xlsx")
         display_df = telegram_df.copy()
-    
+
         def style_telegram_dataframe(df):        
         # Create a styler object
             styler = df.style   
@@ -548,41 +548,116 @@ def main():
             return styler
 
         st.subheader("👥 Customer Visit Data")
-    
-    # Statistics
-        total_visits = len(telegram_df)
-        high_potential = len(
-        telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
-        )
-    
+        # Add Branch Filter
+        st.subheader("🔍 Filter Data")
+        
+        # Check if Branch column exists, if not create a default one
+        if "Branch" not in telegram_df.columns:
+            telegram_df["Branch"] = "Main Branch"  # Default value
+        
+        # Create filters
         col1, col2, col3 = st.columns(3)
+        
+        with col1:
+            # Branch filter
+            branch_list = ["All"] + sorted(telegram_df["Branch"].unique().tolist())
+            selected_branch = st.selectbox(
+                "Select Branch:",
+                options=branch_list,
+                index=0
+            )
+        
+        with col2:
+            # Potential filter
+            potential_list = ["All", "H", "M", "L"]
+            selected_potential = st.selectbox(
+                "Select Potential:",
+                options=potential_list,
+                index=0
+            )
+        
+        with col3:
+            # Business type filter (if column exists)
+            if "Business" in telegram_df.columns:
+                business_list = ["All"] + sorted(telegram_df["Business"].dropna().unique().tolist())
+                selected_business = st.selectbox(
+                    "Select Business Type:",
+                    options=business_list,
+                    index=0
+                )
+            else:
+                selected_business = "All"
+        
+        # Apply filters
+        filtered_df = telegram_df.copy()
+        
+        if selected_branch != "All":
+            filtered_df = filtered_df[filtered_df["Branch"] == selected_branch]
+        
+        if selected_potential != "All":
+            filtered_df = filtered_df[filtered_df["Potential"].str.strip().str.upper() == selected_potential]
+        
+        if selected_business != "All" and "Business" in telegram_df.columns:
+            filtered_df = filtered_df[filtered_df["Business"] == selected_business]
+        
+        # Update display dataframe with filtered data
+        display_df = filtered_df.copy()
+        
+        # Statistics with filtered data
+        total_visits = len(filtered_df)
+        high_potential = len(
+            filtered_df[filtered_df["Potential"].str.strip().str.upper() == "H"]
+        )
+        medium_potential = len(
+            filtered_df[filtered_df["Potential"].str.strip().str.upper() == "M"]
+        )
+        low_potential = len(
+            filtered_df[filtered_df["Potential"].str.strip().str.upper() == "L"]
+        )
+        
+        # Display metrics
+        col1, col2, col3, col4 = st.columns(4)
         col1.metric("Total Visits", total_visits)
         col2.metric("High Potential", high_potential)
-        col3.metric(
-            "HP Percentage",
-            (
-                f"{(high_potential/total_visits*100):.1f}%"
-                if total_visits
-                else "0%"
-        ),
-    )
-    
-    # Display styled dataframe
-    styled_df = style_telegram_dataframe(display_df)
-    st.dataframe(
-        display_df,
-        use_container_width=True,
-        height=800,
-    )
-    
-    # Download option
-    csv = telegram_df.to_csv(index=False)
-    st.download_button(
-        label="📥 Download Visit Data",
-        data=csv,
-        file_name="customer_visits.csv",
-        mime="text/csv",
-    )
+        col3.metric("Medium Potential", medium_potential)
+        col4.metric("Low Potential", low_potential)
+        
+        # HP Percentage
+        hp_percentage = (high_potential / total_visits * 100) if total_visits > 0 else 0
+        st.metric(
+            "High Potential Percentage",
+            f"{hp_percentage:.1f}%"
+        )
+        
+        # Display filtered data count
+        st.write(f"**Showing {len(filtered_df)} of {len(telegram_df)} records**")
+        
+        # Display styled dataframe with filtered data
+        styled_df = style_telegram_dataframe(display_df)
+        st.dataframe(
+            styled_df,  # Fixed: display styled dataframe
+            use_container_width=True,
+            height=600,  # Reduced height for better layout
+        )
+        
+        # Download option for filtered data
+        csv = filtered_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Filtered Data",
+            data=csv,
+            file_name=f"customer_visits_{selected_branch.replace(' ', '_')}.csv",
+            mime="text/csv",
+        )
+        
+        # Optional: Download full dataset
+        with st.expander("Download Full Dataset"):
+            full_csv = telegram_df.to_csv(index=False)
+            st.download_button(
+                label="📥 Download Full Dataset",
+                data=full_csv,
+                file_name="customer_visits_full.csv",
+                mime="text/csv",
+            )
     DB_NAME = "/Users/thekhemfee/Downloads/Customer_Network/CusXRealTime/customer_locations.db"
 
     with tab3:
