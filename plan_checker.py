@@ -534,64 +534,68 @@ def main():
         #            )
 
                 # Custom styling function
-            #def style_telegram_dataframe(df):
-                    # Create a styler object
-                    #styler = df.style
+        def style_telegram_dataframe(df):        
+            # Create a styler object
+            styler = df.style   
+        # Highlight high potential customers
+        if "Potential" in df.columns:
+            styler = styler.apply(
+                        lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
+                        axis=1
+                       )
                     
-                    # Highlight high potential customers
-            #if "Potential_Level" in df.columns:
-            #            styler = styler.apply(
-            #                lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
-            #                axis=1
-            #           )
+            # Color code based on potential
+        def color_potential(val):
+            
+            if str(val).strip().upper() == "H":
+                            return "color: #d32f2f; font-weight: bold;"  # Red for High
+            elif str(val).strip().upper() == "M":
+                            return "color: #f57c00; font-weight: bold;"  # Orange for Medium
+            elif str(val).strip().upper() == "L":
+                            return "color: #388e3c; font-weight: bold;"  # Green for Low
+            return ""
                     
-                    # Color code based on potential
-            #    def color_potential(val):
-            #            if str(val).strip().upper() == "H":
-            #                return "color: #d32f2f; font-weight: bold;"  # Red for High
-            #            elif str(val).strip().upper() == "M":
-            #                return "color: #f57c00; font-weight: bold;"  # Orange for Medium
-            #            elif str(val).strip().upper() == "L":
-            #                return "color: #388e3c; font-weight: bold;"  # Green for Low
-            #            return ""
+        if "Potential" in df.columns:
+            styler = styler.map(color_potential, subset=["Potential_Level"])
                     
-            #    if "Potential_Level" in df.columns:
-            #            styler = styler.map(color_potential, subset=["Potential_Level"])
-                    
-                    # Set properties for better display
-            #        styler = styler.set_properties(**{
-            #           'text-align': 'left',
-            #            'white-space': 'pre-wrap',
-            #            'font-size': '14px'
-            #        })
+            # Set properties for better display
+            styler = styler.set_properties(**{
+                      'text-align': 'left',
+                        'white-space': 'pre-wrap',
+                        'font-size': '14px'
+                    })
                     
                     # Set table headers style
-            #        styler = styler.set_table_styles([{
-            #            'selector': 'th',
-            #            'props': [('background-color', '#2E8B57'), 
-            #                    ('color', 'white'),
-            #                    ('font-weight', 'bold'),
-            #                    ('text-align', 'center')]
-            #        }])
+                    styler = styler.set_table_styles([{
+                        'selector': 'th',
+                        'props': [('background-color', '#2E8B57'), 
+                                ('color', 'white'),
+                                ('font-weight', 'bold'),
+                                ('text-align', 'center')]
+                    }])
                     
-             #       return styler
+                    return styler
 
         st.subheader("👥 Customer Visit Data")
                 # Statistics
         total_visits = len(telegram_df)
-        #high_potential = len(
-        #            telegram_df[telegram_df["Potential_Level"].str.strip().str.upper() == "H"]
-        #)
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric("Total Visits", total_visits)
-        col2.metric("Total HC", 4)
-        col3.metric("High Potential", 5)
-        col4.metric(
-                    "HP Percentage", 8,
+        high_potential = len(
+                    telegram_df[telegram_df["Potential"].str.strip().str.upper() == "H"]
         )
+        col1, col2, col3 = st.columns(3)
+        col1.metric("Total Visits", total_visits)
+        
+        col2.metric("High Potential", high_potential)
+        col3.metric(
+                    "HP Percentage",
+                    (
+                        f"{(high_potential/total_visits*100):.1f}%"
+                        if total_visits
+                        else "0%"
+                    ),
                 
                 # Display styled dataframe
-        #styled_df = style_telegram_dataframe(display_df)
+        styled_df = style_telegram_dataframe(display_df)
         st.dataframe(
                     display_df,
                     use_container_width=True,
