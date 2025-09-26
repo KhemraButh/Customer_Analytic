@@ -502,136 +502,138 @@ def main():
             except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
+        telegram_df = pd.read_excel("customer_data.xlsx")  # Fixed: use read_excel instead of DataFrame
         
-        telegram_df = pd.DataFrame(telegram_data)
-                # Ensure numeric columns are properly formatted
-                
-                if "Interest" in telegram_df.columns:
-                    telegram_df["Interest"] = pd.to_numeric(
-                        telegram_df["Interest"], errors="coerce"
-                    )
-                
-                if "Amount" in telegram_df.columns:
-                    telegram_df["Amount"] = pd.to_numeric(
-                        telegram_df["Amount"], errors="coerce"
-                    )
-                
-                if "Tenure" in telegram_df.columns:
-                    telegram_df["Tenure"] = pd.to_numeric(
-                        telegram_df["Tenure"], errors="coerce"
-                    )
-                if "Maturity" in telegram_df.columns:
-                    telegram_df["Maturity"] = pd.to_numeric(
-                        telegram_df["Maturity"], errors="coerce"
-                    )
-                
+        # Ensure numeric columns are properly formatted
+        if "Interest" in telegram_df.columns:
+            telegram_df["Interest"] = pd.to_numeric(
+                telegram_df["Interest"], errors="coerce"
+            )
+        
+        if "Amount" in telegram_df.columns:
+            telegram_df["Amount"] = pd.to_numeric(
+                telegram_df["Amount"], errors="coerce"
+            )
+        
+        if "Tenure" in telegram_df.columns:
+            telegram_df["Tenure"] = pd.to_numeric(
+                telegram_df["Tenure"], errors="coerce"
+            )
+        
+        if "Maturity" in telegram_df.columns:
+            telegram_df["Maturity"] = pd.to_numeric(
+                telegram_df["Maturity"], errors="coerce"
+            )
+    
+        # Create a display copy with formatted values
+        display_df = telegram_df.copy()
+        
+        # Format numeric columns for display
+        if "Monthly Income" in display_df.columns:
+            display_df["Monthly Income"] = display_df["Monthly Income"].apply(
+                lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
+            )
+        
+        if "Amount" in display_df.columns:
+            display_df["Amount"] = display_df["Amount"].apply(
+                lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
+            )
+        
+        if "Interest" in display_df.columns:
+            display_df["Interest"] = display_df["Interest"].apply(
+                lambda x: f"{x:.1f}%" if pd.notna(x) and x != 0 else ""
+            )
+        
+        if "Tenure" in display_df.columns:
+            display_df["Tenure"] = display_df["Tenure"].apply(
+                lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
+            )
+        
+        if "Maturity" in display_df.columns:
+            display_df["Maturity"] = display_df["Maturity"].apply(
+                lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
+            )
+    
+        # Custom styling function
+        def style_telegram_dataframe(df):
+            # Create a styler object
+            styler = df.style
             
-
-                # Create a display copy with formatted values
-                display_df = telegram_df.copy()
-                
-                # Format numeric columns for display
-                if "Monthly Income" in display_df.columns:
-                    display_df["Monthly Income"] = display_df["Monthly Income"].apply(
-                        lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
-                    )
-                
-                if "Amount" in display_df.columns:
-                    display_df["Amount"] = display_df["Amount"].apply(
-                        lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
-                    )
-                
-                if "Interest" in display_df.columns:
-                    display_df["Interest"] = display_df["Interest"].apply(
-                        lambda x: f"{x:.1f}%" if pd.notna(x) and x != 0 else ""
-                    )
-                
-                if "Tenure" in display_df.columns:
-                    display_df["Tenure"] = display_df["Tenure"].apply(
-                        lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
-                    )
-                if "Maturity" in display_df.columns:
-                    display_df["Maturity"] = display_df["Maturity"].apply(
-                        lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
-                    )
-
-                # Custom styling function
-                def style_telegram_dataframe(df):
-                    # Create a styler object
-                    styler = df.style
-                    
-                    # Highlight high potential customers
-                    if "Potential_Level" in df.columns:
-                        styler = styler.apply(
-                            lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
-                            axis=1
-                        )
-                    
-                    # Color code based on potential
-                    def color_potential(val):
-                        if str(val).strip().upper() == "H":
-                            return "color: #d32f2f; font-weight: bold;"  # Red for High
-                        elif str(val).strip().upper() == "M":
-                            return "color: #f57c00; font-weight: bold;"  # Orange for Medium
-                        elif str(val).strip().upper() == "L":
-                            return "color: #388e3c; font-weight: bold;"  # Green for Low
-                        return ""
-                    
-                    if "Potential_Level" in df.columns:
-                        styler = styler.map(color_potential, subset=["Potential_Level"])
-                    
-                    # Set properties for better display
-                    styler = styler.set_properties(**{
-                        'text-align': 'left',
-                        'white-space': 'pre-wrap',
-                        'font-size': '14px'
-                    })
-                    
-                    # Set table headers style
-                    styler = styler.set_table_styles([{
-                        'selector': 'th',
-                        'props': [('background-color', '#2E8B57'), 
-                                ('color', 'white'),
-                                ('font-weight', 'bold'),
-                                ('text-align', 'center')]
-                    }])
-                    
-                    return styler
-
-                st.subheader("👥 Customer Visit Data")
-                # Statistics
-                total_visits = len(telegram_df)
-                high_potential = len(
-                    telegram_df[telegram_df["Potential_Level"].str.strip().str.upper() == "H"]
+            # Highlight high potential customers
+            if "Potential_Level" in df.columns:
+                styler = styler.apply(
+                    lambda row: ["background-color: #ff9999" if str(row.get("Potential_Level", "")).strip().upper() == "H" else "" for _ in row], 
+                    axis=1
                 )
-                col1, col2, col3, col4 = st.columns(4)
-                col1.metric("Total Visits", total_visits)
-                col2.metric("Total HC", 4)
-                col3.metric("High Potential", high_potential)
-                col4.metric(
-                    "HP Percentage",
-                    (
-                        f"{(high_potential/total_visits*100):.1f}%"
-                        if total_visits
-                        else "0%"
-                    ),
-                )
-                
-                # Display styled dataframe
-                styled_df = style_telegram_dataframe(display_df)
-                st.dataframe(
-                    styled_df,
-                    use_container_width=True,
-                    height=800,
-                )
-                # Download option
-                csv = telegram_df.to_csv(index=False)
-                st.download_button(
-                    label="📥 Download Visit Data",
-                    data=csv,
-                    file_name=f"customer_visits_{pres_start_date}_{pres_end_date}.csv",
-                    mime="text/csv",
-                )
+            
+            # Color code based on potential
+            def color_potential(val):
+                if str(val).strip().upper() == "H":
+                    return "color: #d32f2f; font-weight: bold;"  # Red for High
+                elif str(val).strip().upper() == "M":
+                    return "color: #f57c00; font-weight: bold;"  # Orange for Medium
+                elif str(val).strip().upper() == "L":
+                    return "color: #388e3c; font-weight: bold;"  # Green for Low
+                return ""
+            
+            if "Potential_Level" in df.columns:
+                styler = styler.map(color_potential, subset=["Potential_Level"])
+            
+            # Set properties for better display
+            styler = styler.set_properties(**{
+                'text-align': 'left',
+                'white-space': 'pre-wrap',
+                'font-size': '14px'
+            })
+            
+            # Set table headers style
+            styler = styler.set_table_styles([{
+                'selector': 'th',
+                'props': [('background-color', '#2E8B57'), 
+                        ('color', 'white'),
+                        ('font-weight', 'bold'),
+                        ('text-align', 'center')]
+            }])
+            
+            return styler
+    
+        st.subheader("👥 Customer Visit Data")
+        
+        # Statistics
+        total_visits = len(telegram_df)
+        high_potential = len(
+            telegram_df[telegram_df["Potential_Level"].str.strip().str.upper() == "H"]
+        )
+        
+        col1, col2, col3, col4 = st.columns(4)
+        col1.metric("Total Visits", total_visits)
+        col2.metric("Total HC", 4)
+        col3.metric("High Potential", high_potential)
+        col4.metric(
+            "HP Percentage",
+            (
+                f"{(high_potential/total_visits*100):.1f}%"
+                if total_visits
+                else "0%"
+            ),
+        )
+        
+        # Display styled dataframe
+        styled_df = style_telegram_dataframe(display_df)
+        st.dataframe(
+            styled_df,
+            use_container_width=True,
+            height=800,
+        )
+        
+        # Download option
+        csv = telegram_df.to_csv(index=False)
+        st.download_button(
+            label="📥 Download Visit Data",
+            data=csv,
+            file_name=f"customer_visits_{pres_start_date}_{pres_end_date}.csv",
+            mime="text/csv",
+        )
     
     DB_NAME = "/Users/thekhemfee/Downloads/Customer_Network/CusXRealTime/customer_locations.db"
 
