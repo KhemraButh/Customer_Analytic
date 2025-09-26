@@ -592,9 +592,9 @@ def main():
                         f"{(high_potential/total_visits*100):.1f}%"
                         if total_visits
                         else "0%"
-                    ),
+                    ),)
                 
-                # Display styled dataframe
+        # Display styled dataframe
         styled_df = style_telegram_dataframe(display_df)
         st.dataframe(
                     display_df,
