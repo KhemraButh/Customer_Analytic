@@ -503,54 +503,34 @@ def main():
                 st.error(f"Error processing file: {e}")
     with tab2:
         telegram_df = pd.read_excel("customers_parsed.xlsx")
-        #telegram_df = pd.read_exel("customer_parsed.xlsx")
-                # Ensure numeric columns are properly formatted
-                
-        if "Interest" in telegram_df.columns:
-                    telegram_df["Interest"] = pd.to_numeric(
-                        telegram_df["Interest"], errors="coerce"
-                    )
-                
-        if "Amount" in telegram_df.columns:
-                    telegram_df["Amount"] = pd.to_numeric(
-                        telegram_df["Amount"], errors="coerce"
-                    )
-                
-        if "Tenure" in telegram_df.columns:
-                    telegram_df["Tenure"] = pd.to_numeric(
-                        telegram_df["Tenure"], errors="coerce"
-                    )
-        if "Maturity" in telegram_df.columns:
-                    telegram_df["Maturity"] = pd.to_numeric(
-                        telegram_df["Maturity"], errors="coerce"
-                    )
-                
-                # Create a display copy with formatted values
+        
+        # Ensure numeric columns are properly formatted
+        # Create a display copy with formatted values
         display_df = telegram_df.copy()
                 
                 # Format numeric columns for display
-        if "Monthly Income" in display_df.columns:
-                    display_df["Monthly Income"] = display_df["Monthly Income"].apply(
-                        lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
-                    )
+        #if "Monthly Income" in display_df.columns:
+        #            display_df["Monthly Income"] = display_df["Monthly Income"].apply(
+        #                lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
+        #            )
                 
-        if "Amount" in display_df.columns:
-                    display_df["Amount"] = display_df["Amount"].apply(
-                        lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
-                    )
+        #if "Amount" in display_df.columns:
+        #            display_df["Amount"] = display_df["Amount"].apply(
+        #                lambda x: f"${x:,.0f}" if pd.notna(x) and x != 0 else ""
+        #            )
                 
-        if "Interest" in display_df.columns:
-                    display_df["Interest"] = display_df["Interest"].apply(
-                        lambda x: f"{x:.1f}%" if pd.notna(x) and x != 0 else ""
-                    )
+        #if "Interest" in display_df.columns:
+        #            display_df["Interest"] = display_df["Interest"].apply(
+        #                lambda x: f"{x:.1f}%" if pd.notna(x) and x != 0 else ""
+        #            )
                 
-        if "Tenure" in display_df.columns:
-                    display_df["Tenure"] = display_df["Tenure"].apply(
-                        lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
-                    )
-        if "Maturity" in display_df.columns:
-                    display_df["Maturity"] = display_df["Maturity"].apply(
-                        lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
+        #if "Tenure" in display_df.columns:
+        #            display_df["Tenure"] = display_df["Tenure"].apply(
+        #                lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
+        #            )
+        #if "Maturity" in display_df.columns:
+        #            display_df["Maturity"] = display_df["Maturity"].apply(
+        #                lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
                     )
 
                 # Custom styling function
