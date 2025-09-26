@@ -526,26 +526,26 @@ def main():
                 return "color: #388e3c; font-weight: bold;"  # Green for Low
             return ""
         
-        if "Potential" in df.columns:
-            styler = styler.map(color_potential, subset=["Potential_Level"])
+            if "Potential" in df.columns:
+                styler = styler.map(color_potential, subset=["Potential_Level"])
         
         # Set properties for better display
             styler = styler.set_properties(**{
-            'text-align': 'left',
-            'white-space': 'pre-wrap',
-            'font-size': '14px'
+                'text-align': 'left',
+                'white-space': 'pre-wrap',
+                'font-size': '14px'
             })
         
         # Set table headers style
             styler = styler.set_table_styles([{
-            'selector': 'th',
-            'props': [('background-color', '#2E8B57'), 
+                'selector': 'th',
+                'props': [('background-color', '#2E8B57'), 
                     ('color', 'white'),
                     ('font-weight', 'bold'),
                     ('text-align', 'center')]
-        }])          
+            }])          
         
-        return styler
+            return styler
 
         st.subheader("👥 Customer Visit Data")
     
