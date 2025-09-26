@@ -502,7 +502,7 @@ def main():
             except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
-        telegram_df = pd.read_excel("customer_data.xlsx")  # Fixed: use read_excel instead of DataFrame
+        telegram_df = pd.read_excel("customers_parsed.xlsx")  # Fixed: use read_excel instead of DataFrame
         
         # Ensure numeric columns are properly formatted
         if "Interest" in telegram_df.columns:
