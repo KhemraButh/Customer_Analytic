@@ -526,7 +526,7 @@ def main():
             return ""
                     
             if "Potential" in df.columns:
-                styler = styler.map(color_potential, subset=["Potential_Level"])
+                styler = styler.map(color_potential, subset=["Potential"])
                     
             # Set properties for better display
                 styler = styler.set_properties(**{
