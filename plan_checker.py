@@ -607,12 +607,7 @@ def main():
         col2.metric("Total HC", 4)
         col3.metric("High Potential", 5)
         col4.metric(
-                    "HP Percentage",
-                    (
-                        f"{(high_potential/total_visits*100):.1f}%"
-                        if total_visits
-                        else "0%"
-                    ),
+                    "HP Percentage", 8,
         )
                 
                 # Display styled dataframe
