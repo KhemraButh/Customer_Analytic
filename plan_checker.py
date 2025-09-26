@@ -502,7 +502,7 @@ def main():
             except Exception as e:
                 st.error(f"Error processing file: {e}")
     with tab2:
-        telegram_df = pd.read_excel("customers_parsed.xlsx")
+        telegram_df = pd.read_excel("customer_parsed.xlsx")
         display_df = telegram_df.copy()
         def style_telegram_dataframe(df):        
             # Create a styler object
