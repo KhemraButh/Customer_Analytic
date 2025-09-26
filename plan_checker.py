@@ -531,7 +531,7 @@ def main():
         #if "Maturity" in display_df.columns:
         #            display_df["Maturity"] = display_df["Maturity"].apply(
         #                lambda x: f"{x:.0f} yrs" if pd.notna(x) and x != 0 else ""
-                    )
+        #            )
 
                 # Custom styling function
             #def style_telegram_dataframe(df):
